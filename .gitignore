@@ -1,0 +1,39 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+env/
+venv/
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Database files
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# Python packages
+*.egg
+*.egg-info/
+dist/
+build/
+__pypackages__/
+
+# PyCharm specific
+*.iml
+
+# Optional: model downloads (if you want to avoid large files)
+# transformers cache
+transformers/
+

@@ -1,0 +1,9 @@
+flask
+flask-sqlalchemy
+flask-migrate
+transformers
+torch
+flask-restful
+marshmallow
+marshmallow-sqlalchemy
+pymysql
