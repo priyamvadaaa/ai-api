@@ -2,20 +2,23 @@
 
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification, AutoModelForSeq2SeqLM
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import Schema, fields, ValidationError, validate
+from summary.summ import summ_bp
 
 app=Flask(__name__)
 api=Api(app)
 
+
+#for text classification
 pipe = pipeline("text-classification", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 # Load model directly
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://apiuser:apipassword@localhost/my_flask_db'
 
@@ -33,15 +36,18 @@ def handlebadreq(err):
 
 class Predict(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    text= db.Column(db.String(500),nullable=False)
-    prediction=db.Column(db.String(50))
+    text= db.Column(db.String(1000),nullable=False)
+    prediction=db.Column(db.String(500))
     confidence=db.Column(db.Float)
 
+
+#class Store(db.Model):
+  #  text=db.Column(db.String(1000),nullable=False)
 
 #Marshmallow   (for output)
 class PredictSchema(Schema):
     id=fields.Int(dump_only=True)
-    text=fields.Str(required=True)
+    text=fields.Str(required=True,validate=validate.Length(max=1000,error="text too long please enter under 1000 characters"))
     prediction=fields.Str()
     confidence=fields.Float()
 
@@ -56,19 +62,22 @@ class home(Resource):
     def post(self):
         data=request.get_json()
         try:
-            review=rev_schema.load(data)
+            review=rev_schema.load(data)        #try changing rev_schema to predict_schema and see what happens
         except ValidationError as err:
-            return "please enter a valid string value", 400
+            return err.messages, 400
         result=pipe(review['text'])
         prediction=result[0]['label']
         confidence=result[0]['score']
         final= Predict(text=review['text'],prediction=prediction,confidence=confidence)
         db.session.add(final)
         db.session.commit()
+        with open("reviews.txt","a") as f:
+            f.write(data["text"]+"\n")
         return {"text": review['text'], "prediction": prediction, "confidence": confidence}
 
 
 api.add_resource(home,'/')
+app.register_blueprint(summ_bp,url_prefix='/api')
 
 if __name__ == "__main__":
     app.run(debug=True)
