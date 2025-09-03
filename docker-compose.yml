@@ -9,7 +9,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./prediction.txt:/app/prediction.txt   # mount local ./data folder to container /app/data
+      - ./prediction.txt:/app/prediction.txt
       - ./reviews.txt:/app/reviews.txt
     depends_on:
       - db
