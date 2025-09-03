@@ -23,13 +23,14 @@ model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilber
 
 
 # Get DB credentials from environment (with defaults for local dev)
-db_user = os.getenv("MYSQL_USER", "apiuser")
-db_password = os.getenv("MYSQL_PASSWORD", "apipassword")
-db_name = os.getenv("MYSQL_DATABASE", "my_flask_db")
-db_host = os.getenv("MYSQL_HOST", "localhost")  # 'db' when running in docker-compose
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")  # should be "db" (the service name in docker-compose.yml)
+db_name = os.getenv("DB_NAME")
 
-# Configure SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = (f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}"
+)
 
 
 

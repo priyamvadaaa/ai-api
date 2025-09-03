@@ -34,4 +34,3 @@ def calc_avg_response():
 
     return response
 
-calc_avg_response()
