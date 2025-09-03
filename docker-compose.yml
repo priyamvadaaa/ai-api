@@ -11,6 +11,7 @@ services:
     volumes:
       - ./prediction.txt:/app/prediction.txt
       - ./reviews.txt:/app/reviews.txt
+      - ./app.py:/app/app.py
     depends_on:
       - db
 
@@ -23,6 +24,8 @@ services:
       - .env
     ports:
       - "8501:8501"
+    volumes:
+      - ./streamlitt.py:/app/streamlitt.py
     depends_on:
       - flask
 

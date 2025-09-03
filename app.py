@@ -74,21 +74,26 @@ class home(Resource):
 
     def post(self):
         data=request.get_json()
+        if not data:
+            return "please enter text"
         try:
             review=rev_schema.load(data)
         except ValidationError as err:
             return err.messages, 400
-        result=pipe(review['text'])
-        prediction=result[0]['label']
-        confidence=result[0]['score']
-        final= Predict(text=review['text'],prediction=prediction,confidence=confidence)
-        db.session.add(final)
-        db.session.commit()
-        with open("/app/reviews.txt","a") as f:
-            f.write(data["text"]+"\n")
-        with open("/app/prediction.txt","a") as q:
-            q.write(prediction + "\n")
-        return {"text": review['text'], "prediction": prediction, "confidence": confidence}
+        if not review['text'].strip():
+            return {"message":"please enter text"},400
+        else:
+            result=pipe(review['text'])
+            prediction=result[0]['label']
+            confidence=result[0]['score']
+            final= Predict(text=review['text'],prediction=prediction,confidence=confidence)
+            db.session.add(final)
+            db.session.commit()
+            with open("/app/reviews.txt","a") as f:
+                f.write(data["text"]+"\n")
+            with open("/app/prediction.txt","a") as q:
+                q.write(prediction + "\n")
+            return {"text": review['text'], "prediction": prediction, "confidence": confidence}
 
 class Avg(Resource):
     def get(self):

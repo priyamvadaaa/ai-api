@@ -19,19 +19,24 @@ text = st.text_area("Enter review text:")
 if st.button("Classify"):
     # send POST to Flask
     response = requests.post(API_URL, json={"text": text})
-
-    if response.status_code == 200:
-        data = response.json()
-        output = f"Prediction: {data['prediction']}\nConfidence: {data['confidence']:.8f}"
-
-        def stream_data():
-            for char in output:
-                yield char
-                time.sleep(0.02)
-
-        st.write_stream(stream_data)
+    if not text.strip():
+        st.warning("Please enter text")
     else:
-        st.error("Error from API")
+
+        if response.status_code == 200:
+            data = response.json()
+            output = f"Prediction: {data['prediction']}\nConfidence: {data['confidence']:.8f}"
+
+            def stream_data():
+                for char in output:
+                    yield char
+                    time.sleep(0.02)
+
+            st.write_stream(stream_data)
+        elif response.status_code==400:
+            st.error("text too long please enter under 1000 characters")
+        else:
+            st.error("Error from API")
 
 if st.button('Summarize'):
     response_sum=requests.get(API_URL2)
