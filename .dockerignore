@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+*.pyc
+__pycache__/
+
+# Git files
+.git/
+.gitignore
+
+# Logs, temp files
+*.log
+*.tmp
+
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

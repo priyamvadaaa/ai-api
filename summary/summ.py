@@ -7,14 +7,10 @@ from flask_restful import Resource, Api
 summ_bp=Blueprint("summ_bp",__name__)
 api=Api(summ_bp)
 
+pipe = pipeline("summarization", model="allenai/led-base-16384")
 
-#model
-tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
-model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-small")
-
-pipe=pipeline("summarization",model="google/flan-t5-small")
-
-#reading file
+tokenizer = AutoTokenizer.from_pretrained("allenai/led-base-16384")
+model = AutoModelForSeq2SeqLM.from_pretrained("allenai/led-base-16384")
 
 
 class summary(Resource):
@@ -22,12 +18,17 @@ class summary(Resource):
         with open("/home/askin/Desktop/Work/api/reviews.txt", "r") as p:
             review = p.readlines()
             review_text="".join(review)
-        prompt=f'Summarize this review: {review_text}'
-        res = pipe(prompt, max_length=1000, min_length=50, do_sample=False)
+        #prompt={review_text}
+        res = pipe(review_text, max_new_tokens=100, min_length=5, do_sample=False)
         summary_op=res[0]['summary_text']
         return {"summary":summary_op}
 
+
 api.add_resource(summary,'/summary')
+
+
+
+
 
 #'''ignore'''
 # summary_op=res[0]['summary_text']

@@ -1,5 +1,5 @@
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost/mydb'
-
+import os
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification, AutoModelForSeq2SeqLM
@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from marshmallow import Schema, fields, ValidationError, validate
 from summary.summ import summ_bp
+import avg
 
 app=Flask(__name__)
 api=Api(app)
@@ -20,10 +21,21 @@ tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-uncased-fi
 model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://apiuser:apipassword@localhost/my_flask_db'
 
-db=SQLAlchemy(app)
-migrate=Migrate(app,db)
+# Get DB credentials from environment (with defaults for local dev)
+db_user = os.getenv("MYSQL_USER", "apiuser")
+db_password = os.getenv("MYSQL_PASSWORD", "apipassword")
+db_name = os.getenv("MYSQL_DATABASE", "my_flask_db")
+db_host = os.getenv("MYSQL_HOST", "localhost")  # 'db' when running in docker-compose
+
+# Configure SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = (f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+
+
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 
 #Global ErrorHandler
 @app.errorhandler(ValidationError)
@@ -62,7 +74,7 @@ class home(Resource):
     def post(self):
         data=request.get_json()
         try:
-            review=rev_schema.load(data)        #try changing rev_schema to predict_schema and see what happens
+            review=rev_schema.load(data)
         except ValidationError as err:
             return err.messages, 400
         result=pipe(review['text'])
@@ -73,11 +85,20 @@ class home(Resource):
         db.session.commit()
         with open("reviews.txt","a") as f:
             f.write(data["text"]+"\n")
+        with open("prediction.txt","a") as q:
+            q.write(prediction + "\n")
         return {"text": review['text'], "prediction": prediction, "confidence": confidence}
+
+class Avg(Resource):
+    def get(self):
+        return{"average response": avg.calc_avg_response()}
 
 
 api.add_resource(home,'/')
+api.add_resource(Avg,'/avg')
 app.register_blueprint(summ_bp,url_prefix='/api')
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host=os.getenv("FLASK_HOST", "0.0.0.0"), port=int(os.getenv("FLASK_PORT", 5000)), debug=True)
+
