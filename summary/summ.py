@@ -15,7 +15,7 @@ model = AutoModelForSeq2SeqLM.from_pretrained("allenai/led-base-16384")
 
 class summary(Resource):
     def get(self):
-        with open("/home/askin/Desktop/Work/api/reviews.txt", "r") as p:
+        with open("data/reviews.txt", "r") as p:
             review = p.readlines()
             review_text="".join(review)
         #prompt={review_text}

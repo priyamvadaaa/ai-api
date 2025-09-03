@@ -1,7 +1,7 @@
 
 def calc_avg_response():
 
-    with open("prediction.txt", "r") as s:
+    with open("data/prediction.txt", "r") as s:
         pred = s.readlines()
         cl_pred=list(map(str.strip,pred))
     count_neg=0

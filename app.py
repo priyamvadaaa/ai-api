@@ -83,9 +83,9 @@ class home(Resource):
         final= Predict(text=review['text'],prediction=prediction,confidence=confidence)
         db.session.add(final)
         db.session.commit()
-        with open("reviews.txt","a") as f:
+        with open("data/reviews.txt","a") as f:
             f.write(data["text"]+"\n")
-        with open("prediction.txt","a") as q:
+        with open("data/prediction.txt","a") as q:
             q.write(prediction + "\n")
         return {"text": review['text'], "prediction": prediction, "confidence": confidence}
 

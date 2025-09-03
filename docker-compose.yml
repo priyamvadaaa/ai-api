@@ -8,6 +8,8 @@ services:
       - .env
     ports:
       - "5000:5000"
+    volumes:
+      - ./data:/app/data   # mount local ./data folder to container /app/data
     depends_on:
       - db
 
