@@ -22,12 +22,15 @@ class summary(Resource):
         with open("/home/askin/Desktop/Work/api/reviews.txt", "r") as p:
             review = p.readlines()
             review_text="".join(review)
+            print(review_text)
         prompt=f'Summarize this review: {review_text}'
         res = pipe(prompt, max_length=1000, min_length=50, do_sample=False)
         summary_op=res[0]['summary_text']
         return {"summary":summary_op}
 
 api.add_resource(summary,'/summary')
+
+
 
 #'''ignore'''
 # summary_op=res[0]['summary_text']
