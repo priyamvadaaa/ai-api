@@ -13,9 +13,8 @@ app=Flask(__name__)
 api=Api(app)
 
 
-#for text classification
+#for ai-model
 pipe = pipeline("text-classification", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
-# Load model directly
 
 tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
@@ -27,6 +26,8 @@ db_user = os.getenv("DB_USER")
 db_password = os.getenv("DB_PASSWORD")
 db_host = os.getenv("DB_HOST")  # should be "db" (the service name in docker-compose.yml)
 db_name = os.getenv("DB_NAME")
+
+#valeus hardcoded in .env file so to run local that can be changed
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}"
