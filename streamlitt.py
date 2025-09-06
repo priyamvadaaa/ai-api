@@ -38,19 +38,13 @@ if st.button("Classify"):
         else:
             st.error("Error from API")
 
-if st.button('Summarize'):
-    response_sum=requests.get(API_URL2)
+if st.button("Summarize"):
+    response_sum = requests.get(API_URL2, stream=True)
 
-    if response_sum.status_code==200:
-        data_sum=response_sum.json()
-        output_sum=f"Summary: {data_sum['summary']}"
-
-        def stream_data_sum():
-            for char in output_sum:
-                yield char
-                time.sleep(0.02)
-        st.write_stream(stream_data_sum)
-    else :
+    if response_sum.status_code == 200:
+        # Stream chunks to Streamlit
+        st.write_stream(response_sum.iter_content(chunk_size=None, decode_unicode=True))
+    else:
         st.error("Error from API")
 
 if st.button('Avg_response'):

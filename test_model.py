@@ -1,8 +1,9 @@
-from transformers import pipeline
-
-pipe = pipeline("text-classification", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
-# Load model directly
+from transformers import pipeline, TextStreamer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+
+pipe = pipeline("text-classification", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",streamer=TextStreamer)
+# Load model directly
 
 tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")

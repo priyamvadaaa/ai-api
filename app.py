@@ -2,7 +2,7 @@
 import os
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification, AutoModelForSeq2SeqLM
+from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification, AutoModelForSeq2SeqLM, TextIteratorStreamer
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from marshmallow import Schema, fields, ValidationError, validate
@@ -18,6 +18,7 @@ pipe = pipeline("text-classification", model="distilbert/distilbert-base-uncased
 
 tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-uncased-finetuned-sst-2-english")
+
 
 
 
