@@ -18,7 +18,7 @@ class Summary(Resource):
             review_text = f.readlines()
 
         prompt = (
-            f"Summarize the following customer reviews.Do not copy sentences or phrases directly:\n{review_text}")
+            f"Summarize the following customer reviews by extracting key information from them:\n{review_text}")
 
         inputs = tokenizer(prompt, return_tensors="pt", truncation=True)
 
